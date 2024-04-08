@@ -11,7 +11,7 @@
 #include <nlohmann/json.hpp>
 
 #include <logic.hpp>
-#include <gui.hpp>
+//#include <gui.hpp>
 
 using position = std::vector<std::vector<uint8_t>>;
 
