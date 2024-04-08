@@ -68,7 +68,7 @@ inline uint getCurrentTime()
   std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-nt main() 
+int main() 
 {
 
   position currentGen;
