@@ -11,7 +11,7 @@
 #include <nlohmann/json.hpp>
 
 #include <logic.hpp>
-//#include <gui.hpp>
+#include <gui.hpp>
 
 using position = std::vector<std::vector<uint8_t>>;
 
@@ -60,7 +60,6 @@ const uint16_t height)
   return posString;
 } 
 
-
 inline uint getCurrentTime()
 {
   return 
@@ -68,45 +67,41 @@ inline uint getCurrentTime()
   std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-int main() 
+class MyApp : public wxApp 
 {
+public:
+    virtual bool OnInit() {
+        mainFrame *frame = new mainFrame("Conway");
+        frame->Show(true);
 
-  position currentGen;
+        position currentGen;
 
-  currentGen = setupPosition();
+        currentGen = setupPosition();
 
-  const uint16_t height = currentGen.size();
-  const uint16_t width = currentGen[0].size();
+        const uint16_t height = currentGen.size();
+        const uint16_t width = currentGen[0].size();
 
-  size_t genCount = 1;
+        size_t genCount = 1;
 
-  std::cout << posToString(currentGen, width, height) << "\n"
-  << "Generation 0\n"
-  << "there are " << countCells(currentGen) << " live cells\n\n";
+        for (size_t i = 0; i < 0; i++)
+        {
+          system("clear");
 
-  std::cin.get();
+          uint startTime = getCurrentTime();
 
-  for (size_t i = 0; i < 1000; i++)
-  {
-    system("clear");
+          currentGen = advanceGen(currentGen, width, height);
 
-    uint startTime = getCurrentTime();
+          genCount++;
 
-    currentGen = advanceGen(currentGen, width, height);
+          startTime = getCurrentTime() - startTime;
 
-    std::cout << posToString(currentGen, width, height) << "\n"
-    << "Generation " << genCount << "\n"
-    << "there are " << countCells(currentGen) << " live cells\n\n";
+          if (50 - startTime > 0)
+          std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(50 - startTime));
+        }
+        return true;
+    }
+};
 
-    genCount++;
-
-    startTime = getCurrentTime() - startTime;
-
-    if (50 - startTime > 0)
-    std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(50 - startTime));
-  }
-
-  return 0;
-}
+wxIMPLEMENT_APP(MyApp);
 
 
