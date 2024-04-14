@@ -9,10 +9,11 @@
 class Position
 {
 using row_t = std::vector<uint8_t>;
+using data_t = std::vector<std::vector<uint8_t>>;
 
 public:
   Position(const nlohmann::json& jsonObject) :
-    __data {std::vector<std::vector<uint8_t>>()}
+    __data {}
   {    
     uint16_t maxWidth = 0;
 
@@ -20,7 +21,7 @@ public:
     {
       uint16_t rowWidth = jsonObject[y].size();
 
-      __data.push_back(std::vector<uint8_t>());
+      __data.push_back(row_t());
 
       if (rowWidth > maxWidth)
         maxWidth = rowWidth;
@@ -39,7 +40,7 @@ public:
   {
     uint32_t cellsQuantity = 0;
 
-    for (const std::vector<uint8_t> &row : __data)
+    for (const row_t &row : __data)
     {
       cellsQuantity += std::count(row.begin(), row.end(), true);
     }
@@ -49,7 +50,7 @@ public:
 
   void advanceGen() // pending refactoring
   {
-    std::vector<std::vector<uint8_t>> nextGen;
+    data_t nextGen;
 
     std::copy(__data.begin(), __data.end(), std::back_inserter(nextGen));
 
@@ -138,5 +139,5 @@ private:
 
   uint16_t width, height;
 
-  std::vector<std::vector<uint8_t>> __data;  
+  data_t __data;  
 };
