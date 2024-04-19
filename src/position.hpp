@@ -1,49 +1,40 @@
 #include <vector>
 #include <cinttypes>
-#include <string>
 
 #include <nlohmann/json.hpp>
 
 #pragma once
 
-class Position
+  class Position
 {
-using row_t = std::vector<uint8_t>;
-using data_t = std::vector<std::vector<uint8_t>>;
-
 public:
-  Position(const nlohmann::json& jsonObject) :
+  using row_t = std::vector<uint8_t>;
+  using data_t = std::vector<std::vector<uint8_t>>;
+
+  Position():
+    height {},
+    width {},
     __data {}
-  {    
-    uint16_t maxWidth = 0;
+  {};
 
-    for (uint16_t y = 0; y < jsonObject.size(); y++)
-    {
-      uint16_t rowWidth = jsonObject[y].size();
+  Position(nlohmann::json toCopy) :
+    height {toCopy.size()},
+    width {toCopy[0].size()},
+    __data {toCopy.template get<data_t>()}
+  {};
 
-      __data.push_back(row_t());
+  Position(data_t toCopy) :
+    height {toCopy.size()},
+    width {toCopy[0].size()},
+    __data {toCopy}
+  {};
 
-      if (rowWidth > maxWidth)
-        maxWidth = rowWidth;
-
-      for (uint16_t x = 0; x < rowWidth; x++)
-      {
-        __data[y].push_back(static_cast<uint8_t>(jsonObject[y][x]));
-      }
-    }
-
-    width = __data[0].size();
-    height = __data.size();
-  };
-  
   const uint32_t countCells()
   {
     uint32_t cellsQuantity = 0;
 
     for (const row_t &row : __data)
-    {
       cellsQuantity += std::count(row.begin(), row.end(), true);
-    }
 
     return cellsQuantity;
   }
@@ -58,7 +49,7 @@ public:
     {
       for (uint32_t posX = 0; posX < width; posX++)
       {
-        if (__data[posY][posX]) 
+        if (!__data[posY][posX]) 
         continue;
 
         uint8_t sorroundingCells = 0;
@@ -131,13 +122,12 @@ public:
   };
 
 private:
-
-  const bool isOutOfBounds(const int16_t cellCoord, const uint16_t maxCoord)
+  const bool isOutOfBounds(const uint16_t cellCoord, const uint16_t maxCoord)
   {
     return cellCoord < 0 || cellCoord >= maxCoord;
   }
 
-  uint16_t width, height;
+  const size_t width, height;
 
   data_t __data;  
 };

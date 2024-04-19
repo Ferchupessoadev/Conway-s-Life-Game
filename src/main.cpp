@@ -1,21 +1,24 @@
 #include <fstream>
 #include <cinttypes>
 #include <vector>
-#include <string>
 #include <cinttypes>
+#include <memory>
 
 #include <gui.hpp>
 #include <position.hpp>
 
-Position setupPosition() 
+Position* setupPosition() 
 {
   std::ifstream jsonFile {"./positions/random.json"};
 
-  nlohmann::json jsonObject {nlohmann::json::parse(jsonFile)};
+  const nlohmann::json jsonObject {nlohmann::json::parse(jsonFile)};
 
-  Position currentGen {jsonObject[0]};
+  uint16_t maxWidth {};
+  for (auto &&row : jsonObject[0])
+    for (auto &&cell : row)
+      maxWidth = maxWidth > row.size() ? maxWidth : row.size();
 
-  return currentGen;
+  return new Position(jsonObject[0]);
 }
 
 inline uint getCurrentTime()
@@ -25,18 +28,20 @@ inline uint getCurrentTime()
   std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-
 class MyApp : public wxApp 
 {
 public:
-    virtual bool OnInit() {
-        mainFrame *frame = new mainFrame("Conway");
-        frame->Show(true);
+  virtual bool OnInit() 
+  {
+    MainFrame *frame = new MainFrame("Conway");
+    frame->Show(true);
 
-        Position currentGen {setupPosition()};
+    Position* currentGen {setupPosition()};
 
-        return true;
-    }
+    frame->getPosCanvas()->showPosition(currentGen);
+
+    return true;
+  }
 };
 
 wxIMPLEMENT_APP(MyApp);

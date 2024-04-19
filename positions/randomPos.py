@@ -17,11 +17,12 @@ height = int(argv[2])
 
 cellRate = int(argv[3])
 
-position = [
+position: list[list[int]] = [
     [
-        randint(1, 100) in range(1, cellRate + 1) for _ in range(width)
+         (1 if randint(1, 100) in range(1, cellRate + 1) else 0) for _ in range(width)
     ] 
     for _ in range(height)
 ]
+file = open("./random.json", "w")
 
-dump(position, open("./random.json", "w"))
+dump(position, file)
