@@ -21,13 +21,6 @@ Position* setupPosition()
   return new Position(jsonObject[0]);
 }
 
-inline uint getCurrentTime()
-{
-  return 
-  std::chrono::duration_cast<std::chrono::milliseconds>(
-  std::chrono::system_clock::now().time_since_epoch()).count();
-}
-
 class MyApp : public wxApp 
 {
 public:
